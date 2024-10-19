@@ -2,9 +2,9 @@ package org.example.service;
 
 import org.example.model.User;
 import org.example.repository.UserRepository;
-import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 
 @Service
@@ -16,23 +16,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
         try {
+            // Check if username already exists
             User existingUser = userRepository.findByUsername(user.getUsername());
             if (existingUser != null) {
                 throw new IllegalArgumentException("Username already exists");
             }
+            // Save new user
             return userRepository.save(user);
         } catch (Exception e) {
-            e.printStackTrace(); // 打印详细的异常信息
+            e.printStackTrace();
             throw e;
         }
     }
 
     @Override
     public User loginUser(String username, String password) throws IllegalArgumentException {
+        // Find user by username
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new IllegalArgumentException("User name does not exist");
         }
+        // Verify password
         if (!user.getPassword().equals(password)) {
             throw new IllegalArgumentException("Incorrect password");
         }
@@ -41,22 +45,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void rechargeBalance(Long userId, double amount) throws IllegalArgumentException {
-        // 查找学生用户
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new IllegalArgumentException("User does not exist");
         }
-        // 更新余额
         if (amount <= 0) {
             throw new IllegalArgumentException("Recharge amount must be greater than 0");
         }
+        // Add balance
         user.setBalance(user.getBalance().add(new BigDecimal(amount)));
         userRepository.save(user);
     }
 
     @Override
     public void withdrawBalance(Long userId, double amount) throws IllegalArgumentException {
-        // 查找教师用户
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new IllegalArgumentException("User does not exist");
@@ -64,7 +66,6 @@ public class UserServiceImpl implements UserService {
         if (!"teacher".equals(user.getRole())) {
             throw new IllegalArgumentException("Only teacher users can withdraw cash");
         }
-        // 更新余额
         if (amount <= 0) {
             throw new IllegalArgumentException("The cash withdrawal amount must be greater than 0");
         }
@@ -77,11 +78,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long userId) throws IllegalArgumentException {
-        // 查找用户
-        User user = userRepository.findById(userId).orElse(null);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+    }
+
+    @Override
+    public User getUserByUsername(String username) throws IllegalArgumentException {
+        User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new IllegalArgumentException("User does not exist");
         }
         return user;
     }
+
 }

@@ -7,12 +7,38 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    // DTO for login response
+    public static class LoginResponse {
+        private String username;
+        private String role;
+        private String token; // If needed for authentication
+
+        public LoginResponse(String username, String role, String token) {
+            this.username = username;
+            this.role = role;
+            this.token = token;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public String getToken() {
+            return token;
+        }
+    }
 
     @PostMapping("/create")
     public ResponseEntity<String> createUser(@RequestBody User user) {
@@ -27,10 +53,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password) {
         try {
             User user = userService.loginUser(username, password);
-            return new ResponseEntity<>("Login Successful, Welcome " + user.getUsername(), HttpStatus.OK);
+
+            // If login is successful, return user details (including role)
+            LoginResponse response = new LoginResponse(user.getUsername(), user.getRole(), "dummy-token"); // You can add real token logic here
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -63,9 +93,9 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<User> getUserInfo(@RequestParam Long userId) {
+    public ResponseEntity<User> getUserInfo(@RequestParam String username) {
         try {
-            User user = userService.getUserById(userId);
+            User user = userService.getUserByUsername(username); // 通过用户名查询用户
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -73,4 +103,18 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @GetMapping("/info/username")
+    public ResponseEntity<User> getUserInfoByUsername(@RequestParam String username) {
+        try {
+            User user = userService.getUserByUsername(username);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

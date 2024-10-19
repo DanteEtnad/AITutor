@@ -6,7 +6,6 @@ import org.example.model.User;
 import org.example.repository.CourseHistoryRepository;
 import org.example.repository.CourseRepository;
 import org.example.repository.UserRepository;
-import org.example.service.CourseHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -48,10 +46,6 @@ public class CourseHistoryServiceImpl implements CourseHistoryService {
             throw new IllegalArgumentException("Invalid Course ID");
         }
 
-        // 检查是否已经选择过该课程
-        if (courseHistoryRepository.findByStudentUserIdAndCourseCourseId(studentId, courseId) != null) {
-            throw new IllegalArgumentException("This course has already been selected, please select another course");
-        }
 
         // 检查学生余额是否足够支付课程费用
         if (student.getBalance().compareTo(course.getPrice()) < 0) {

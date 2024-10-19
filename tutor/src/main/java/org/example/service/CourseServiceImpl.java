@@ -4,7 +4,6 @@ import org.example.model.Course;
 import org.example.model.User;
 import org.example.repository.CourseRepository;
 import org.example.repository.UserRepository;
-import org.example.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
