@@ -1,0 +1,10 @@
+.study-history-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.list-group-item {
+    font-size: 18px;
+    border-radius: 5px;
+}
