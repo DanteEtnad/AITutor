@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // 获取用户上下文
-import UserDataService from '../services/user.service'; // 导入 UserDataService
+import { useAuth } from '../context/AuthContext';
+import UserDataService from '../services/course.service';
 import { Table, Alert, Container, Button } from 'react-bootstrap';
-import './MyCourse.css'; // 引入样式
+import './MyCourse.css';
 import { useNavigate } from 'react-router-dom';
 
 function MyCourses() {
-    const { user } = useAuth(); // 从 AuthContext 中获取当前登录用户信息
-    const [userInfo, setUserInfo] = useState(null); // 存储用户信息，包括 userId
-    const [courses, setCourses] = useState([]); // 存储课程列表
-    const [errorMessage, setErrorMessage] = useState(''); // 存储错误信息
+    const { user } = useAuth();
+    const [userInfo, setUserInfo] = useState(null);
+    const [courses, setCourses] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(true); // Track loading state
     const navigate = useNavigate();
 
-    // 第一个 useEffect，使用 username 获取 userId
+    // Fetch user info using username
     useEffect(() => {
         if (user && user.username) {
             UserDataService.getUserInfo(user.username)
                 .then(response => {
-                    setUserInfo(response.data); // 保存用户信息到 state 中，包括 userId
-                    console.log("User Info fetched:", response.data); // 调试输出用户信息
+                    setUserInfo(response.data);
+                    console.log("User Info fetched:", response.data);
                 })
                 .catch(e => {
                     setErrorMessage('Error fetching user info: ' + e.message);
@@ -26,37 +27,41 @@ function MyCourses() {
         }
     }, [user]);
 
-    // 第二个 useEffect，使用 userId 获取教师上传的课程列表
+    // Fetch courses using userId
     useEffect(() => {
         if (userInfo && userInfo.userId) {
             UserDataService.getCoursesByTeacherId(userInfo.userId)
                 .then(response => {
-                    setCourses(response.data); // 保存课程数据到 state 中
-                    console.log("Courses fetched:", response.data); // 调试输出课程信息
+                    setCourses(response.data);
+                    setIsLoading(false); // Stop loading once data is fetched
+                    console.log("Courses fetched:", response.data);
                 })
                 .catch(e => {
                     setErrorMessage('Error fetching courses: ' + e.message);
+                    setIsLoading(false); // Stop loading on error
                 });
+        } else {
+            setIsLoading(false); // Stop loading if userInfo is not available
         }
     }, [userInfo]);
+
     const handleGoToDashboard = () => {
         navigate('/teacher-dashboard');
     };
-    // 如果没有课程则显示提示
-    if (!courses.length && !errorMessage) {
-        return <div>Loading courses...</div>;
-    }
 
     return (
         <Container className="courses-wrapper">
             <h2 className="courses-title">My Uploaded Courses</h2>
             {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
             {/* Button to go back to Teacher Dashboard */}
             <Button variant="secondary" onClick={handleGoToDashboard} className="mb-3">
                 Back to Teacher Dashboard
             </Button>
 
-            {courses.length > 0 ? (
+            {isLoading ? (
+                <div>Loading courses...</div>
+            ) : courses.length > 0 ? (
                 <Table striped bordered hover>
                     <thead>
                     <tr>

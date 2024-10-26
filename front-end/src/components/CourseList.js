@@ -1,36 +1,94 @@
-import React, { useState } from 'react';
-import { Card, Button, Container, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Container, Row, Col, Alert, Modal } from 'react-bootstrap';
+import CourseDataService from '../services/course.service';
+import UserDataService from '../services/user.service';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './CourseList.css';
 
 function CourseList() {
-    const [courses, setCourses] = useState([
-        { id: 1, name: 'Introduction to AI', description: 'Learn the basics of artificial intelligence.', isSelected: false },
-        { id: 2, name: 'Machine Learning', description: 'A deep dive into machine learning techniques.', isSelected: false },
-        { id: 3, name: 'Data Science', description: 'Understanding data science workflows and tools.', isSelected: false },
-        { id: 4, name: 'Deep Learning', description: 'Explore neural networks and deep learning.', isSelected: false },
-    ]);
+    const { user, setCourseInfo } = useAuth(); // Get user and setCourseInfo from AuthContext
+    const [userId, setUserId] = useState(null);
+    const [courses, setCourses] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
+    const navigate = useNavigate(); // Navigation hook
 
-    const selectCourse = (id) => {
-        setCourses(
-            courses.map(course =>
-                course.id === id ? { ...course, isSelected: !course.isSelected } : course
-            )
-        );
+    // Fetch user information on component load to get userId
+    useEffect(() => {
+        if (user && user.username) {
+            UserDataService.getUserInfo(user.username)
+                .then(response => {
+                    setUserId(response.data.userId); // Set the userId
+                })
+                .catch(e => {
+                    setErrorMessage(`Error fetching user info: ${e.response?.data || e.message}`);
+                });
+        }
+    }, [user]);
+
+    // Fetch all courses
+    useEffect(() => {
+        CourseDataService.getAllCourse()
+            .then(response => {
+                setCourses(response.data.map(course => ({ ...course, isSelected: false })));
+            })
+            .catch(error => {
+                const message = error.response?.data?.message || 'Failed to load courses';
+                setErrorMessage(message);
+            });
+    }, []);
+
+    // Handle course selection
+    const handleSelectCourse = (course) => {
+        if (!userId) {
+            setErrorMessage('Please log in to select a course.');
+            return;
+        }
+
+        CourseDataService.selectCourse(userId, course.courseId)
+            .then(response => {
+                setSelectedCourse(course);
+                setCourseInfo(course.courseId, userId); // Save courseId and userId to AuthContext
+                setShowModal(true);
+            })
+            .catch(error => {
+                const message = error.response?.data || 'Course selection failed, please try again.';
+                setErrorMessage(message);
+            });
+    };
+
+    // Close modal and navigate to TakeCourse
+    const handleCloseModal = () => {
+        setShowModal(false);
+        navigate('/take-course'); // Redirect to TakeCourse
     };
 
     return (
         <Container className="course-list-container">
             <h1 className="text-center mt-4 mb-4">Available Courses</h1>
+
+            {errorMessage && (
+                <Alert variant="danger">
+                    {typeof errorMessage === 'string' ? errorMessage : 'An error occurred'}
+                </Alert>
+            )}
+
             <Row>
-                {courses.map((course) => (
-                    <Col key={course.id} md={6} lg={4} className="mb-4">
-                        <Card className={`course-card ${course.isSelected ? 'selected' : ''}`}>
+                {courses.map(course => (
+                    <Col key={course.courseId} md={6} lg={4} className="mb-4">
+                        <Card className="course-card">
                             <Card.Body>
-                                <Card.Title>{course.name}</Card.Title>
-                                <Card.Text>{course.description}</Card.Text>
+                                <Card.Title>{course.title}</Card.Title>
+                                <Card.Text>Course ID: {course.courseId}</Card.Text>
+                                <Card.Text>Instructor: {course.teacher?.username || 'N/A'}</Card.Text>
+                                <Card.Text>{course.content}</Card.Text>
+                                <Card.Text>Level: {course.level}</Card.Text>
+                                <Card.Text>Price: ${course.price}</Card.Text>
                                 <Button
                                     variant={course.isSelected ? 'success' : 'primary'}
-                                    onClick={() => selectCourse(course.id)}
+                                    onClick={() => handleSelectCourse(course)}
                                 >
                                     {course.isSelected ? 'Selected' : 'Select Course'}
                                 </Button>
@@ -39,6 +97,23 @@ function CourseList() {
                     </Col>
                 ))}
             </Row>
+
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Course Selected Successfully</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    You have successfully selected the course: {selectedCourse?.title}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleCloseModal}>
+                        Go to Course Now
+                    </Button>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Study Later
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 }

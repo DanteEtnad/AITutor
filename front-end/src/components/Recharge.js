@@ -1,93 +1,129 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Alert, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import UserDataService from '../services/user.service';
-import './Recharge.css'; // 引入 CSS 样式
+import { useAuth } from '../context/AuthContext';
+import UserDataService from "../services/user.service"; // Import API request service
+import './Recharge.css'; // Import styles
 
 function Recharge() {
-    const [amount, setAmount] = useState(''); // 保存充值金额
-    const [paymentMethod, setPaymentMethod] = useState('credit_card'); // 默认支付方式
-    const [errorMessage, setErrorMessage] = useState(''); // 错误信息
-    const [showModal, setShowModal] = useState(false); // 控制弹窗显示
-    const [submitted, setSubmitted] = useState(false); // 表单提交状态
-    const navigate = useNavigate(); // 跳转导航
+    const { user } = useAuth(); // Get current user from AuthContext
+    const [amount, setAmount] = useState(''); // Store the amount to recharge
+    const [errorMessage, setErrorMessage] = useState(''); // Store error messages
+    const [submitted, setSubmitted] = useState(false); // Track if form is successfully submitted
+    const [showModal, setShowModal] = useState(false); // Control the modal visibility
+    const [userId, setUserId] = useState(null); // State to hold userId
 
-    // 处理充值提交
+    const navigate = useNavigate(); // Used for page redirection
+
+    // Use effect to fetch user info and get userId
+    useEffect(() => {
+        if (user && user.username) {
+            UserDataService.getUserInfo(user.username)
+                .then(response => {
+                    setUserId(response.data.userId); // Save userId from response
+                })
+                .catch(e => {
+                    setErrorMessage('Error fetching user info: ' + e.message);
+                });
+        }
+    }, [user]);
+
+    // Handle form submission
     const handleRecharge = (e) => {
         e.preventDefault();
 
-        // 验证充值金额
-        if (!amount || isNaN(amount) || amount <= 0) {
-            setErrorMessage("Please enter a valid amount!");
+        // Validate if amount field is empty
+        if (!amount) {
+            setErrorMessage("Amount is required!");
             return;
         }
 
-        // 假设 userId 是从用户上下文中获取
-        const userId = 1; // 替换为真实的 userId
+        // Check if userId is valid
+        if (!userId) {
+            setErrorMessage("User ID is not available. Please try again later.");
+            return;
+        }
 
-        // 调用充值 API
+        // Send recharge request
         UserDataService.recharge(userId, amount)
-            .then(() => {
+            .then(response => {
+                console.log("Recharge successful:", response.data);
                 setSubmitted(true);
                 setErrorMessage("");
                 setShowModal(true);
             })
             .catch(e => {
-                setErrorMessage('Recharge failed: ' + e.message);
+                console.error("Recharge error:", e.response?.data || e.message);
+                setErrorMessage(e.response?.data || "Recharge failed, please try again later.");
             });
     };
 
-    // 关闭弹窗并跳转回用户仪表盘
+    // Close the modal
     const handleModalClose = () => {
         setShowModal(false);
-        navigate('/student-dashboard'); // 跳转回用户仪表盘
+        navigate('/student-dashboard'); // Navigate to student dashboard
+    };
+
+    // Handle navigate back to student-dashboard
+    const handleBackToDashboard = () => {
+        navigate('/student-dashboard');
     };
 
     return (
         <div className="recharge-wrapper">
-            <h2 className="recharge-title">Account Recharge</h2>
-            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-            <Form onSubmit={handleRecharge} className="recharge-form">
-                <Form.Group controlId="formAmount" className="mb-3">
-                    <Form.Label>Recharge Amount</Form.Label>
-                    <Form.Control
-                        type="number"
-                        placeholder="Enter amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                    />
-                </Form.Group>
+            <div className="recharge-form-container">
+                {submitted ? (
+                    <div>
+                        <h4 className="recharge-title">Recharge successful!</h4>
+                    </div>
+                ) : (
+                    <Form onSubmit={handleRecharge} className="recharge-form">
+                        {errorMessage && (
+                            <Alert variant="danger" className="recharge-alert">
+                                {errorMessage}
+                            </Alert>
+                        )}
 
-                <Form.Group controlId="formPaymentMethod" className="mb-3">
-                    <Form.Label>Payment Method</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={paymentMethod}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                    >
-                        <option value="credit_card">Credit Card</option>
-                        <option value="paypal">PayPal</option>
-                        <option value="bank_transfer">Bank Transfer</option>
-                    </Form.Control>
-                </Form.Group>
+                        <Form.Group controlId="formBasicAmount" className="mb-3">
+                            <Form.Label>Recharge Amount</Form.Label>
+                            <Form.Control
+                                type="number"
+                                placeholder="Enter amount"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                isInvalid={!!errorMessage && !amount}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Amount is required
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                <Button variant="success" type="submit" className="w-100">
-                    Recharge Now
-                </Button>
-            </Form>
+                        <Button variant="primary" type="submit" className="recharge-button w-100 mb-2">
+                            Recharge
+                        </Button>
 
-            {/* 提交成功后显示弹窗 */}
-            <Modal show={showModal} onHide={handleModalClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Recharge Successful</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Your account has been recharged successfully!</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" onClick={handleModalClose}>
-                        Back to Dashboard
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                        {/* Back to Dashboard Button */}
+                        <Button variant="secondary" onClick={handleBackToDashboard} className="w-100">
+                            Back to Student Dashboard
+                        </Button>
+                    </Form>
+                )}
+
+                {/* Modal to show recharge success */}
+                <Modal show={showModal} onHide={handleModalClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Recharge Successful</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        You have successfully recharged ${amount}!
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={handleModalClose}>
+                            OK
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
         </div>
     );
 }

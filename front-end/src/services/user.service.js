@@ -1,7 +1,6 @@
 import http from "../http-common";
 
 class UserDataService {
-
     getAll() {
         return http.get("/users");
     }
@@ -15,12 +14,12 @@ class UserDataService {
     }
 
     login(username, password) {
-        // 创建 URL 查询参数
+        // Create URL query parameters
         const params = new URLSearchParams();
         params.append('username', username);
         params.append('password', password);
 
-        return http.post("/users/login?" + params.toString()); // 发送 POST 请求到登录接口
+        return http.post("/users/login?" + params.toString()); // Send POST request to login endpoint
     }
 
     update(id, data) {
@@ -34,17 +33,22 @@ class UserDataService {
     deleteAll() {
         return http.delete(`/users`);
     }
-    getCoursesByTeacherId(teacherId) {
-        return http.get(`/courses/teacher?teacherId=${teacherId}`);
-    }
-    // 提现操作
-    getUserInfo(username){
+
+
+    // Get user info by username
+    getUserInfo(username) {
         return http.get(`/users/info?username=${username}`);
     }
 
-    // 提现操作
+
+    // Withdraw balance
     withdrawBalance(userId, amount) {
         return http.post(`/users/withdraw?userId=${userId}&amount=${amount}`);
+    }
+
+    // Recharge balance
+    recharge(userId, amount) {
+        return http.post(`/users/recharge?userId=${userId}&amount=${amount}`);
     }
 }
 

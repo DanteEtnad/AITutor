@@ -30,7 +30,7 @@ public class CourseHistoryServiceImpl implements CourseHistoryService {
     private CourseRepository courseRepository;
 
     private static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String OPENAI_API_KEY = "OPENAI_API_KEY"; // 替换为实际的 API 密钥
+    private static final String OPENAI_API_KEY = "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"; // 替换为实际的 API 密钥
 
     @Override
     public CourseHistory selectCourse(Long studentId, Long courseId) throws IllegalArgumentException {

@@ -14,6 +14,7 @@ import StudyHistory from './components/StudyHistory';
 import UploadCourse from './components/UploadCourse';
 import Finance from './components/Finance';
 import MyCourses from './components/MyCourse';
+import TakeCourse from './components/TakeCourse';
 
 function App() {
     return (
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/course-list" element={<CourseList />} />
                     <Route path="/study-history" element={<StudyHistory />} />
                     <Route path="/my-courses" element={<MyCourses />} />
+                    <Route path="take-course" element={<TakeCourse />} />
                 </Routes>
             </div>
         </AuthProvider>

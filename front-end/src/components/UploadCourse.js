@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Alert, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import CourseDataService from "../services/course.service"; // Import API request service
+import UserDataService from "../services/user.service"; // Import User service to get teacher's userId
+import { useAuth } from '../context/AuthContext'; // Import Auth context
 import './UploadCourse.css'; // Import styles
 
 function UploadCourse() {
+    const { user } = useAuth(); // Get the current authenticated user
+    const [userId, setUserId] = useState(null); // Store teacher's userId dynamically
     const [title, setTitle] = useState(''); // Store the course title
     const [content, setContent] = useState(''); // Store the course content
     const [level, setLevel] = useState(''); // Store the course level
@@ -13,6 +17,19 @@ function UploadCourse() {
     const [submitted, setSubmitted] = useState(false); // Track if form is successfully submitted
     const [showModal, setShowModal] = useState(false); // Control the modal visibility
     const navigate = useNavigate(); // Used for page redirection
+
+    // Retrieve user ID based on username when component loads
+    useEffect(() => {
+        if (user && user.username) {
+            UserDataService.getUserInfo(user.username)
+                .then(response => {
+                    setUserId(response.data.userId); // Set the retrieved userId to be used in course upload
+                })
+                .catch(e => {
+                    setErrorMessage('Error fetching user info: ' + e.message);
+                });
+        }
+    }, [user]);
 
     // Handle form submission
     const handleUpload = (e) => {
@@ -24,6 +41,12 @@ function UploadCourse() {
             return;
         }
 
+        // Validate if the userId (teacher's ID) is available
+        if (!userId) {
+            setErrorMessage("Error: Unable to retrieve user ID.");
+            return;
+        }
+
         // Send upload request
         const courseData = {
             title: title,
@@ -32,7 +55,7 @@ function UploadCourse() {
             price: parseFloat(price), // Ensure price is a number
         };
 
-        CourseDataService.uploadCourse(courseData, 15) // Pass course data and teacherId
+        CourseDataService.uploadCourse(courseData, userId) // Use dynamically fetched teacherId
             .then(response => {
                 console.log("Course uploaded successfully:", response.data);
                 setSubmitted(true);
@@ -49,8 +72,7 @@ function UploadCourse() {
     // Close the modal
     const handleModalClose = () => {
         setShowModal(false);
-        // Optionally redirect after closing the modal
-        navigate('/teacher-dashboard'); // Redirect to courses page after success
+        navigate('/teacher-dashboard'); // Redirect to the teacher dashboard after success
     };
 
     const handleGoToDashboard = () => {

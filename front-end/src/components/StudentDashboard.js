@@ -1,87 +1,108 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Container, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Button, Card, Container, Row, Col, ListGroup, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // 获取用户登录信息
-import './StudentDashboard.css'; // 引入CSS文件
+import { useAuth } from '../context/AuthContext';
+import CourseDataService from '../services/course.service';
+import UserDataService from '../services/user.service';
+import './StudentDashboard.css';
 
 function StudentDashboard() {
-    const { user, logout } = useAuth(); // 从 AuthContext 获取用户信息和登出功能
+    const { user, setCourseInfo, logout } = useAuth(); // Get user and courseInfo functions from AuthContext
     const navigate = useNavigate();
-    const [courses, setCourses] = useState([]); // 用来存储课程数据的状态
+    const [studentId, setStudentId] = useState(null);
+    const [recentCourses, setRecentCourses] = useState([]); // Store last three courses
+    const [errorMessage, setErrorMessage] = useState('');
 
+    // Fetch studentId on component load
     useEffect(() => {
-        // 模拟获取课程数据
-        const mockCourses = [
-            { id: 1, title: 'Mathematics 101', description: 'Basic Mathematics for Beginners' },
-            { id: 2, title: 'Physics 101', description: 'Introduction to Physics' },
-            { id: 3, title: 'English Literature', description: 'Learn about Classic English Literature' },
-        ];
-        setCourses(mockCourses);
-    }, []);
+        if (user && user.username) {
+            UserDataService.getUserInfo(user.username)
+                .then(response => {
+                    setStudentId(response.data.userId);
+                })
+                .catch(error => {
+                    setErrorMessage(`Failed to fetch user information: ${error.message}`);
+                });
+        }
+    }, [user]);
 
-    // 处理退出登录逻辑
-    const handleLogout = () => {
-        logout(); // 调用 AuthContext 中的 logout 函数
-        navigate('/'); // 退出登录后重定向到首页
+    // Fetch the last three courses once studentId is available
+    useEffect(() => {
+        if (studentId) {
+            CourseDataService.getAllCourseByStudentId(studentId)
+                .then(response => {
+                    const lastThreeCourses = response.data.slice(-3).reverse(); // Get the last three courses
+                    setRecentCourses(lastThreeCourses);
+                })
+                .catch(error => {
+                    setErrorMessage(`Failed to load recent courses: ${error.message}`);
+                });
+        }
+    }, [studentId]);
+
+    // Navigate to course and save course info
+    const handleTakeCourse = (courseId) => {
+        setCourseInfo(courseId, studentId); // Save courseId and studentId to context
+        navigate('/take-course');
     };
 
-    // 跳转到相应页面的处理函数
+    // Additional navigation handlers
     const navigateToProfile = () => navigate('/profile');
     const navigateToRecharge = () => navigate('/recharge');
     const navigateToCourses = () => navigate('/course-list');
     const navigateToHistory = () => navigate('/study-history');
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <Container className="dashboard-container">
-            <div className="dashboard-header">
-                <h1>Welcome, {user.username}!</h1>
-                <p>Manage your profile and explore courses below:</p>
-            </div>
+            <h1 className="text-center mt-4 mb-4">Welcome, {user.username}!</h1>
 
             <Row className="dashboard-actions mb-4">
                 <Col>
-                    <Button variant="info" onClick={navigateToProfile} className="dashboard-btn">
-                        View Profile
-                    </Button>
+                    <Button variant="info" onClick={navigateToProfile} className="dashboard-btn">View Profile</Button>
                 </Col>
                 <Col>
-                    <Button variant="success" onClick={navigateToRecharge} className="dashboard-btn">
-                        Recharge
-                    </Button>
+                    <Button variant="success" onClick={navigateToRecharge} className="dashboard-btn">Recharge</Button>
                 </Col>
                 <Col>
-                    <Button variant="primary" onClick={navigateToCourses} className="dashboard-btn">
-                        Courses
-                    </Button>
+                    <Button variant="primary" onClick={navigateToCourses} className="dashboard-btn">Courses</Button>
                 </Col>
                 <Col>
-                    <Button variant="warning" onClick={navigateToHistory} className="dashboard-btn">
-                        Study History
-                    </Button>
+                    <Button variant="warning" onClick={navigateToHistory} className="dashboard-btn">Study History</Button>
                 </Col>
             </Row>
 
-            <div className="course-list">
-                <h3>Your Courses</h3>
-                {courses.length > 0 ? (
-                    courses.map(course => (
-                        <Card key={course.id} className="mb-3 course-card">
-                            <Card.Body>
-                                <Card.Title>{course.title}</Card.Title>
-                                <Card.Text>{course.description}</Card.Text>
-                                <Button variant="primary">Go to Course</Button>
-                            </Card.Body>
-                        </Card>
-                    ))
+            {/* Display error message if any */}
+            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
+            <div className="recent-courses">
+                <h3>Recently Taken Courses</h3>
+                {recentCourses.length > 0 ? (
+                    <ListGroup className="mb-4">
+                        {recentCourses.map((entry) => (
+                            <ListGroup.Item key={entry.historyId} className="course-item">
+                                <div className="course-info">
+                                    <h5>{entry.course.title}</h5>
+                                    <p>{entry.course.content}</p>
+                                    <p><strong>Level:</strong> {entry.course.level}</p>
+                                    <p><strong>Instructor:</strong> {entry.course.teacher.username}</p>
+                                </div>
+                                <Button variant="primary" onClick={() => handleTakeCourse(entry.course.courseId)}>
+                                    Go to Course
+                                </Button>
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
                 ) : (
-                    <p>No courses available at the moment.</p>
+                    <p className="text-center">No recent courses available.</p>
                 )}
             </div>
 
             <div className="logout-button">
-                <Button variant="danger" onClick={handleLogout}>
-                    Logout
-                </Button>
+                <Button variant="danger" onClick={handleLogout}>Logout</Button>
             </div>
         </Container>
     );
