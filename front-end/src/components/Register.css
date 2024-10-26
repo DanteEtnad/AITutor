@@ -1,0 +1,54 @@
+/* Wrapper to center the form on the page */
+.register-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Container for the form */
+.register-form-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+/* Title styling */
+.register-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form styling */
+.register-form {
+    margin-bottom: 15px;
+}
+
+/* Register button styling */
+.register-button {
+    width: 100%;
+}
+
+/* Error message styling */
+.register-alert {
+    margin-bottom: 15px;
+}
+
+/* Optional: Add some spacing between form groups */
+.register-form .form-group {
+    margin-bottom: 15px;
+}
+
+/* Style for invalid input fields */
+.is-invalid {
+    border-color: #dc3545; /* Bootstrap's danger color */
+}
+
+.register-button:hover {
+    background-color: #28a745; /* Bootstrap's success color on hover */
+    border-color: #28a745;
+}
