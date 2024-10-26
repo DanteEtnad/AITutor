@@ -11,6 +11,9 @@ import Profile from './components/Profile';
 import Recharge from './components/Recharge';
 import CourseList from './components/CourseList';
 import StudyHistory from './components/StudyHistory';
+import UploadCourse from './components/UploadCourse';
+import Finance from './components/Finance';
+import MyCourses from './components/MyCourse';
 
 function App() {
     return (
@@ -23,10 +26,13 @@ function App() {
                     <Route path="/course-preview" element={<CoursePreview />} /> {/* 添加课程预览页面路由 */}
                     <Route path="/student-dashboard" element={<StudentDashboard />} /> {/* Student Dashboard */}
                     <Route path="/teacher-dashboard" element={<TeacherDashboard />} /> {/* Teacher Dashboard */}
+                    <Route path="/finance" element={<Finance />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/upload-course" element={<UploadCourse />} />
                     <Route path="/recharge" element={<Recharge />} />
                     <Route path="/course-list" element={<CourseList />} />
                     <Route path="/study-history" element={<StudyHistory />} />
+                    <Route path="/my-courses" element={<MyCourses />} />
                 </Routes>
             </div>
         </AuthProvider>

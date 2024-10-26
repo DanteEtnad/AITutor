@@ -34,11 +34,18 @@ class UserDataService {
     deleteAll() {
         return http.delete(`/users`);
     }
-
-    getUserInfo(username) {
-        return http.get(`/users/info?username=${username}`); // 使用 username 查询用户信息
+    getCoursesByTeacherId(teacherId) {
+        return http.get(`/courses/teacher?teacherId=${teacherId}`);
+    }
+    // 提现操作
+    getUserInfo(username){
+        return http.get(`/users/info?username=${username}`);
     }
 
+    // 提现操作
+    withdrawBalance(userId, amount) {
+        return http.post(`/users/withdraw?userId=${userId}&amount=${amount}`);
+    }
 }
 
 export default new UserDataService();

@@ -1,8 +1,16 @@
 import React from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import './TeacherDashboard.css'; // 引入CSS文件
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function TeacherDashboard() {
+    const navigate = useNavigate();
+    const navigateToProfile = () => navigate('/profile');
+    const navigateToUploadCourse = () => navigate('/upload-course');
+    const navigateToFinance = () => navigate('/finance');
+    const navigateToMyCourses = () => navigate('/my-courses');
+    const navigateToLogin = () => navigate('/login');
     return (
         <div className="teacher-dashboard-wrapper">
             <Container>
@@ -15,25 +23,16 @@ function TeacherDashboard() {
                             <Card.Body>
                                 <Card.Title>Courses</Card.Title>
                                 <Card.Text>Manage all your courses</Card.Text>
-                                <Button variant="primary" href="/manage-courses">Manage Courses</Button>
+                                <Button variant="primary" href="/my-courses">Manage Courses</Button>
                             </Card.Body>
                         </Card>
                     </Col>
                     <Col md={3}>
                         <Card className="dashboard-card">
                             <Card.Body>
-                                <Card.Title>Students</Card.Title>
-                                <Card.Text>View and manage students</Card.Text>
-                                <Button variant="primary" href="/manage-students">Manage Students</Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col md={3}>
-                        <Card className="dashboard-card">
-                            <Card.Body>
-                                <Card.Title>Assessments</Card.Title>
-                                <Card.Text>Create or review assessments</Card.Text>
-                                <Button variant="primary" href="/manage-assessments">Manage Assessments</Button>
+                                <Card.Title>Upload Courses</Card.Title>
+                                <Card.Text>Upload course materials</Card.Text>
+                                <Button variant="primary" href="/upload-course">Manage Upload Courses</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -46,36 +45,21 @@ function TeacherDashboard() {
                             </Card.Body>
                         </Card>
                     </Col>
+                    <Col md={3}>
+                        <Card className="dashboard-card">
+                             <Card.Body>
+                             <Card.Title>Profile</Card.Title>
+                             <Card.Text>View or update your profile</Card.Text>
+                             <Button variant="primary" href="/profile">Manage Profile</Button>
+                             </Card.Body>
+                        </Card>
+                    </Col>
                 </Row>
-
-                <Row className="mb-4">
-                    {/* Additional Actions */}
-                    <Col md={4}>
-                        <Card className="dashboard-card">
-                            <Card.Body>
-                                <Card.Title>Send Notifications</Card.Title>
-                                <Card.Text>Send important notifications to students</Card.Text>
-                                <Button variant="secondary" href="/notifications">Manage Notifications</Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col md={4}>
-                        <Card className="dashboard-card">
-                            <Card.Body>
-                                <Card.Title>Profile</Card.Title>
-                                <Card.Text>View or update your profile</Card.Text>
-                                <Button variant="secondary" href="/profile">Manage Profile</Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col md={4}>
-                        <Card className="dashboard-card">
-                            <Card.Body>
-                                <Card.Title>Analytics</Card.Title>
-                                <Card.Text>Review student performance and course analytics</Card.Text>
-                                <Button variant="secondary" href="/analytics">View Analytics</Button>
-                            </Card.Body>
-                        </Card>
+                <Row className="mt-4">
+                    <Col className="text-center">
+                        <Button variant="danger" onClick={navigateToLogin}>
+                            Logout
+                        </Button>
                     </Col>
                 </Row>
             </Container>
