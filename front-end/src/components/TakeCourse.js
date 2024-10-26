@@ -1,13 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, ListGroup, Alert } from 'react-bootstrap';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import CourseDataService from '../services/course.service';
 
 function TakeCourse() {
     const { courseInfo } = useAuth(); // Get courseId and studentId from context
+    const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]); // Store chat history
     const [errorMessage, setErrorMessage] = useState(''); // Store error message
+
+    // Load chat history from localStorage on component mount
+    useEffect(() => {
+        const savedChatHistory = localStorage.getItem(`chatHistory_${courseInfo.courseId}`);
+        if (savedChatHistory) {
+            setChatHistory(JSON.parse(savedChatHistory));
+        }
+    }, [courseInfo.courseId]);
+
+    // Update localStorage whenever chatHistory changes
+    useEffect(() => {
+        localStorage.setItem(`chatHistory_${courseInfo.courseId}`, JSON.stringify(chatHistory));
+    }, [chatHistory, courseInfo.courseId]);
 
     // Handle sending a message to the AI and updating the chat history
     const handleSendMessage = (e) => {
@@ -21,13 +36,19 @@ function TakeCourse() {
         // Send message to AI and update chat history with both user message and AI response
         CourseDataService.interactWithChatGPT(courseInfo.studentId, courseInfo.courseId, message)
             .then(response => {
-                setChatHistory([...chatHistory, { message, response: response.data }]); // Append message and response
+                const newEntry = { message, response: response.data };
+                setChatHistory([...chatHistory, newEntry]); // Append message and response
                 setMessage(''); // Clear input
                 setErrorMessage(''); // Clear any previous error messages
             })
             .catch(error => {
                 setErrorMessage(error.response?.data || 'Failed to interact with AI, please try again.');
             });
+    };
+
+    // Handle ending the chat and redirecting to Student Dashboard
+    const handleEndChat = () => {
+        navigate('/student-dashboard');
     };
 
     return (
@@ -60,6 +81,11 @@ function TakeCourse() {
                 </Form.Group>
                 <Button variant="primary" type="submit" className="mt-3">Send</Button>
             </Form>
+
+            {/* End Chat button */}
+            <Button variant="secondary" onClick={handleEndChat} className="mt-3">
+                End Chat and Return to Dashboard
+            </Button>
         </Container>
     );
 }
