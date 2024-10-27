@@ -74,7 +74,7 @@ function MyCourses() {
                     </thead>
                     <tbody>
                     {courses.map((course, index) => (
-                        <tr key={course.id}>
+                        <tr key={course.courseId}>
                             <td>{index + 1}</td>
                             <td>{course.title}</td>
                             <td>{course.content}</td>

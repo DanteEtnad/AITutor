@@ -1,22 +1,22 @@
 import React from 'react';
 import { Container, Button, Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import './Home.css'; // 引入样式文件
+import './Home.css';
 
 function Home() {
     const navigate = useNavigate();
 
-    // 跳转到登录页面
+
     const handleLoginClick = () => {
         navigate('/login');
     };
 
-    // 跳转到注册页面
+
     const handleRegisterClick = () => {
         navigate('/register');
     };
 
-    // 跳转到课程预览页面
+
     const handleCoursePreviewClick = () => {
         navigate('/course-preview');
     };
@@ -29,7 +29,7 @@ function Home() {
                     AI Tutor provides students with advanced learning simulations and assessments supported by AI technology. Teachers can create scenario-based simulations and evaluate student performance effectively.
                 </p>
 
-                {/* 快捷入口按钮 */}
+
                 <div className="home-buttons">
                     <Button variant="primary" onClick={handleLoginClick} className="home-button">
                         Login
@@ -39,7 +39,7 @@ function Home() {
                     </Button>
                 </div>
 
-                {/* 平台特色 */}
+
                 <h2>Platform Features</h2>
                 <Row className="features-section">
                     <Col md={4}>
@@ -74,7 +74,7 @@ function Home() {
                     </Col>
                 </Row>
 
-                {/* 课程预览 */}
+
                 <h2>Course Previews</h2>
                 <p>
                     Explore some of our publicly available courses before signing up. These courses give you a glimpse into what AI Tutor has to offer.

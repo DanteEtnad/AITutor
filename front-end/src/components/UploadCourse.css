@@ -4,21 +4,21 @@
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background-color: #f7f7f7; /* 背景浅灰色 */
+    background-color: #f7f7f7;
 }
 
 .upload-form-container {
     width: 100%;
-    max-width: 500px; /* 比 login 宽一点 */
+    max-width: 500px;
     padding: 20px;
-    border-radius: 8px; /* 圆角 */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
 
 .upload-title {
     text-align: center;
-    font-size: 24px; /* 增加字体大小 */
+    font-size: 24px;
     font-weight: bold;
     color: #333;
     margin-bottom: 20px;
@@ -40,8 +40,8 @@
 }
 
 .upload-form .form-control:focus {
-    border-color: #007bff; /* 输入框聚焦时颜色 */
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* 聚焦时的阴影 */
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .upload-button {
@@ -58,7 +58,7 @@
 }
 
 .upload-button:hover {
-    background-color: #0056b3; /* 按钮悬停时的颜色 */
+    background-color: #0056b3;
 }
 
 .upload-alert {

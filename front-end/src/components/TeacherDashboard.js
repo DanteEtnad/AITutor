@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
-import './TeacherDashboard.css'; // 引入CSS文件
+import './TeacherDashboard.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 

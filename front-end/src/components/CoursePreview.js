@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 function CoursePreview() {
     const navigate = useNavigate();
 
-    // 假设这是公开的课程数据
+
     const courses = [
         { id: 1, title: 'AI Basics', description: 'Introduction to AI and its applications.' },
         { id: 2, title: 'Machine Learning', description: 'Fundamentals of Machine Learning.' },

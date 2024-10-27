@@ -4,7 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
-import CoursePreview from './components/CoursePreview'; // 引入 CoursePreview 组件
+import CoursePreview from './components/CoursePreview';
 import StudentDashboard from './components/StudentDashboard'; // Import StudentDashboard
 import TeacherDashboard from './components/TeacherDashboard'; // Import TeacherDashboard
 import Profile from './components/Profile';
@@ -24,7 +24,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/course-preview" element={<CoursePreview />} /> {/* 添加课程预览页面路由 */}
+                    <Route path="/course-preview" element={<CoursePreview />} />
                     <Route path="/student-dashboard" element={<StudentDashboard />} /> {/* Student Dashboard */}
                     <Route path="/teacher-dashboard" element={<TeacherDashboard />} /> {/* Teacher Dashboard */}
                     <Route path="/finance" element={<Finance />} />

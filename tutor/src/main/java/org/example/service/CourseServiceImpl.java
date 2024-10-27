@@ -20,27 +20,27 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course uploadCourse(Course course, Long teacherId) throws IllegalArgumentException {
-        // 验证教师身份
+
         User teacher = userRepository.findById(teacherId).orElse(null);
         if (teacher == null || !"teacher".equals(teacher.getRole())) {
             throw new IllegalArgumentException("无效的教师ID或用户不是教师");
         }
 
-        // 设置课程的教师ID
+
         course.setTeacher(teacher);
 
-        // 保存课程
+
         return courseRepository.save(course);
     }
     @Override
     public List<Course> getAllCourses() {
-        // 从数据库中获取所有课程
+
         return courseRepository.findAll();
     }
 
     @Override
     public List<Course> getCoursesByTeacherId(Long teacherId) {
-        // 从数据库中获取特定教师的课程
+
         return courseRepository.findByTeacherUserId(teacherId);
     }
 }

@@ -95,7 +95,7 @@ public class UserController {
     @GetMapping("/info")
     public ResponseEntity<User> getUserInfo(@RequestParam String username) {
         try {
-            User user = userService.getUserByUsername(username); // 通过用户名查询用户
+            User user = userService.getUserByUsername(username);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

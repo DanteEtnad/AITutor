@@ -30,11 +30,11 @@ public class CourseHistoryServiceImpl implements CourseHistoryService {
     private CourseRepository courseRepository;
 
     private static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String OPENAI_API_KEY = "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"; // 替换为实际的 API 密钥
+    private static final String OPENAI_API_KEY = "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";
 
     @Override
     public CourseHistory selectCourse(Long studentId, Long courseId) throws IllegalArgumentException {
-        // 验证学生和课程是否存在
+
         User student = userRepository.findById(studentId).orElse(null);
         Course course = courseRepository.findById(courseId).orElse(null);
 
@@ -50,21 +50,21 @@ public class CourseHistoryServiceImpl implements CourseHistoryService {
             throw new IllegalArgumentException("This course has already been selected, please select another course");
         }
 
-        // 检查学生余额是否足够支付课程费用
+
         if (student.getBalance().compareTo(course.getPrice()) < 0) {
             throw new IllegalArgumentException("Insufficient balance to select the course");
         }
 
-        // 扣除学生余额，增加教师余额
+
         User teacher = course.getTeacher();
         student.setBalance(student.getBalance().subtract(course.getPrice()));
         teacher.setBalance(teacher.getBalance().add(course.getPrice()));
 
-        // 保存学生和教师更新后的信息
+
         userRepository.save(student);
         userRepository.save(teacher);
 
-        // 保存选课记录
+
         CourseHistory courseHistory = new CourseHistory();
         courseHistory.setStudent(student);
         courseHistory.setCourse(course);
@@ -75,14 +75,14 @@ public class CourseHistoryServiceImpl implements CourseHistoryService {
 
     @Override
     public List<CourseHistory> getSelectedCoursesByStudentId(Long studentId) {
-        // 从数据库中获取特定学生的所有选课记录
+
         return courseHistoryRepository.findByStudentUserId(studentId);
     }
 
 
     @Override
     public String interactWithChatGPT(Long studentId, Long courseId, String studentMessage) {
-        // 验证课程和学生的关系
+
         try {
             CourseHistory courseHistory = courseHistoryRepository.findByStudentUserIdAndCourseCourseId(studentId, courseId);
             if (courseHistory == null) {
