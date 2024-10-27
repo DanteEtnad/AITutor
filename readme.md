@@ -65,7 +65,7 @@ To deploy the project, follow the steps below:
    
  ```bash
 npm install
-npm start
+npm start'''
 
 ## Environment Variables
 
