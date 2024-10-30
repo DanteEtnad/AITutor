@@ -1,8 +1,8 @@
 # Overview
 
-This project is an AI-powered language tutor application designed to enhance the student learning experience by providing a personalised learning environment. The application divides users into students and teachers, allowing them to interact in a structured educational environment. 
+This project is an AI-powered language tutor application designed to enhance the student learning experience by providing a personalised learning environment. The application divides users into students and teachers, allowing them to interact in a structured educational environment.
 
-Teachers can create lessons, set assessments, and mentor students, while students can select and learn from available lessons and practice language skills by interacting with AI. The AI interactions are powered by the OpenAI GPT API, creating a conversational learning experience that adapts to the context provided by the teacher.
+Teachers can create lessons, set assessments, and mentor students, while students can select and learn from available lessons and practice language skills by interacting with AI. The AI interactions are powered by the OpenAI GPT API, creating a conversational learning experience that adapts to the context provided by the teacher. Additionally, **ASR (Automatic Speech Recognition)** and **TTS (Text-to-Speech)** modules are integrated to enable voice-based interaction, where student speech is recognized, responded to by AI, and converted back to audio for a fully immersive experience.
 
 The application consists of a backend and a frontend:
 - The **backend**, built using Java and the Spring Boot framework, is responsible for the core business logic and interacts with the database to persist user, course, and assessment data.
@@ -12,7 +12,7 @@ The application consists of a backend and a frontend:
 - **User Management**: Handles registration and management of student and teacher accounts.
 - **Course Creation**: Allows teachers to create courses, set assessments, and manage content.
 - **Course Selection**: Enables students to browse and select courses.
-- **AI-based Student Learning**: Provides a conversational learning experience using OpenAI GPT API.
+- **AI-based Student Learning**: Provides a conversational learning experience using OpenAI GPT API, enhanced with ASR and TTS for voice-based interaction.
 - **Payment System**: Manages course registration fees, balance top-up, and teacher withdrawals.
 - **Integration of Components**: Combines backend and frontend to offer a seamless digital learning platform for educational interactions.
 
@@ -78,29 +78,30 @@ npm start
 
 The following high-level technologies are used in this project:
 
-### OpenAI GPT API
-- Use OpenAI's GPT API to implement a dialogue function between students and the AI to provide a personalized language learning experience.
-- Teachers can set up course scenarios, and the AI will interact with students based on these scenarios.
+### OpenAI GPT API with ASR and TTS
+- The application uses OpenAI's GPT API to implement conversational interactions between students and AI for personalized learning.
+- **ASR (Automatic Speech Recognition)** converts students' spoken language into text, which the ChatGPT API processes to generate responses.
+- **TTS (Text-to-Speech)** then converts the AI-generated text back into audio, allowing for natural, voice-based language practice.
 
 ### Spring Boot
-- The backend uses the Spring Boot framework, which simplifies the configuration and development process and provides powerful dependency injection and modularity.
-- Uses Spring Data JPA to handle database operations, reducing a lot of boilerplate code.
+- The backend uses the Spring Boot framework, which simplifies configuration and development, offering powerful dependency injection and modularity.
+- Uses Spring Data JPA to handle database operations, reducing boilerplate code.
 
 ### React
-- The front-end uses the React framework to provide users with a modern, responsive user interface.
-- Utilizes React Router to implement the application's page navigation.
+- The frontend is built with React, providing a modern, responsive user interface.
+- Uses React Router for seamless navigation between application pages.
 
 ### RESTful API
-- The back-end communicates with the front-end via a RESTful API, ensuring front-end and back-end separation.
-- This approach improves the scalability and maintainability of the application.
+- Backend and frontend communicate via a RESTful API, ensuring a decoupled architecture.
+- This setup improves the scalability and maintainability of the application.
 
 ### PostgreSQL
-- PostgreSQL is used as a relational database management system.
-- It is responsible for storing information about users, courses, test records, etc., ensuring data security and consistency.
+- PostgreSQL is used as the database management system, ensuring secure and consistent storage of users, courses, and assessment data.
 
 ### React Bootstrap
-- Uses React Bootstrap to enhance the aesthetics and user experience of the front-end interface.
-- Simplifies the use of UI components.
+- React Bootstrap enhances the aesthetics and user experience of the frontend interface with a range of UI components.
 
 ### Gradle
-- Uses Gradle as the project build tool to facilitate dependency management and project packaging.
+- Gradle is used as the project build tool, simplifying dependency management and project packaging.
+
+In summary, this application integrates React for a responsive UI, Spring Boot for efficient backend management, PostgreSQL for secure data storage, and OpenAI GPT with ASR and TTS for interactive, voice-based language tutoring. Together, these technologies create a personalized, engaging, and effective learning platform.
